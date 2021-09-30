@@ -5,15 +5,11 @@ import * as React from 'react'
 
 // 🐨 here's where you'll implement your countReducer function.
 
-function Counter({initialCount = 0, step = 1}) {
-  // 🐨 replace React.useState with React.useReducer.
-  // 💰 React.useReducer(countReducer, initialCount)
-  const [count, setCount] = React.useState(initialCount)
+const countReducer = (state: number, newState: number) => newState;
 
-  // 💰 you can write the countReducer function above so you don't have to make
-  // any changes to the next two lines of code! Remember:
-  // The 1st argument is called "state" - the current value of count
-  // The 2nd argument is called "newState" - the value passed to setCount
+function Counter({initialCount = 0, step = 1}) {
+  const [count, setCount] = React.useReducer(countReducer, initialCount)
+
   const increment = () => setCount(count + step)
   const decrement = () => setCount(count - step)
   return (
