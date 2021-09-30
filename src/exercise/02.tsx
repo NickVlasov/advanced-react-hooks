@@ -32,32 +32,24 @@ type AsyncState<T extends unknown> =
       error: Error
     }
 
-// 🦺 similar to above, this will need to be a generic type now and rename "pokemon" to "data"
-// I'd also recommend renaming this
 type AsyncAction<T extends unknown> =
   | {type: 'reset'}
   | {type: 'pending'}
   | {type: 'resolved'; data: T}
   | {type: 'rejected'; error: Error}
 
-// 🐨 this is going to be our generic asyncReducer
-// 🦺 make this function a generic that accepts a DataType and passes that to
-// your AsyncState and AsyncAction types
 function asyncReducer<T extends unknown>(
   state: AsyncState<T>,
   action: AsyncAction<T>,
 ): AsyncState<T> {
   switch (action.type) {
     case 'pending': {
-      // 🐨 replace "pokemon" with "data"
       return {status: 'pending', data: null, error: null}
     }
     case 'resolved': {
-      // 🐨 replace "pokemon" with "data" (in the action too!)
       return {status: 'resolved', data: action.data, error: null}
     }
     case 'rejected': {
-      // 🐨 replace "pokemon" with "data"
       return {status: 'rejected', data: null, error: action.error}
     }
     default: {
