@@ -10,13 +10,6 @@
     patterns you can follow to make custom hooks that provide great APIs for
     developers to be productive building applications.
   </p>
-
-  <a href="https://epicreact.dev">
-    <img
-      alt="Learn React from Start to Finish"
-      src="https://kentcdodds.com/images/epicreact-promo/er-1.gif"
-    />
-  </a>
 </div>
 
 <hr />
