@@ -2,7 +2,7 @@
 // http://localhost:3000/isolated/exercise/02.extra-4.tsx
 
 import * as React from 'react'
-import {useCallback, useMemo} from 'react'
+import {useCallback} from 'react'
 
 import {
   fetchPokemon,
