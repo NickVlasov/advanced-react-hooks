@@ -1,9 +1,8 @@
-// useContext: Caching response data in context
+// useContext: Remove context
 // 💯 caching in a context provider (exercise)
 // http://localhost:3000/isolated/exercise/03.extra-2.tsx
 
 import * as React from 'react'
-import {useContext} from 'react'
 
 import {
   fetchPokemon,
@@ -38,43 +37,39 @@ function pokemonCacheReducer(
   }
 }
 
-type PokemonCacheContextT =
-  | [PokemonCacheState, React.Dispatch<PokemonCacheAction>]
-  | undefined
-
-const PokemonCacheContext = React.createContext<PokemonCacheContextT>(undefined)
-
-const PokemonCacheProvider: React.FC = ({children}) => {
+function PokemonSection({onSelect, pokemonName}) {
   const [cache, dispatch] = React.useReducer(pokemonCacheReducer, {})
 
   return (
-    <PokemonCacheContext.Provider value={[cache, dispatch]}>
-      {children}
-    </PokemonCacheContext.Provider>
-  )
-}
-
-function PokemonSection({onSelect, pokemonName}) {
-  return (
-    <PokemonCacheProvider>
-      <div style={{display: 'flex'}}>
-        <PreviousPokemon onSelect={onSelect} />
-        <div className="pokemon-info" style={{marginLeft: 10}}>
-          <PokemonErrorBoundary
-            onReset={() => onSelect('')}
-            resetKeys={[pokemonName]}
-          >
-            <PokemonInfo pokemonName={pokemonName} />
-          </PokemonErrorBoundary>
-        </div>
+    <div style={{display: 'flex'}}>
+      <PreviousPokemon onSelect={onSelect} cache={cache} />
+      <div className="pokemon-info" style={{marginLeft: 10}}>
+        <PokemonErrorBoundary
+          onReset={() => onSelect('')}
+          resetKeys={[pokemonName]}
+        >
+          <PokemonInfo
+            pokemonName={pokemonName}
+            cache={cache}
+            dispatchCacheUpdate={dispatch}
+          />
+        </PokemonErrorBoundary>
       </div>
-    </PokemonCacheProvider>
+    </div>
   )
 }
 
-function PokemonInfo({pokemonName}: {pokemonName: string}) {
-  const [cache, dispatch] = useContext(PokemonCacheContext)
+interface PokemonInfoProps {
+  pokemonName: string
+  cache: PokemonCacheState
+  dispatchCacheUpdate: React.Dispatch<PokemonCacheAction>
+}
 
+function PokemonInfo({
+  pokemonName,
+  cache,
+  dispatchCacheUpdate,
+}: PokemonInfoProps) {
   const {data: pokemon, status, error, run, setData} = useAsync<PokemonData>()
 
   React.useEffect(() => {
@@ -85,12 +80,12 @@ function PokemonInfo({pokemonName}: {pokemonName: string}) {
     } else {
       run(
         fetchPokemon(pokemonName).then(pokemonData => {
-          dispatch({type: 'ADD_POKEMON', pokemonName, pokemonData})
+          dispatchCacheUpdate({type: 'ADD_POKEMON', pokemonName, pokemonData})
           return pokemonData
         }),
       )
     }
-  }, [cache, dispatch, pokemonName, run, setData])
+  }, [cache, dispatchCacheUpdate, pokemonName, run, setData])
 
   switch (status) {
     case 'idle':
@@ -106,9 +101,12 @@ function PokemonInfo({pokemonName}: {pokemonName: string}) {
   }
 }
 
-function PreviousPokemon({onSelect}: {onSelect: (name: string) => void}) {
-  const [cache] = useContext(PokemonCacheContext)
+interface ProviousPokemonProps {
+  cache: PokemonCacheState
+  onSelect: (name: string) => void
+}
 
+function PreviousPokemon({onSelect, cache}: ProviousPokemonProps) {
   return (
     <div>
       Previous Pokemon
